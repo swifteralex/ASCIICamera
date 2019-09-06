@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
                         if (currentTimestamp - lastAnalyzedTimestamp >= 50) {
                             EditText editText = (EditText)findViewById(R.id.editText2);
+                            editText.setKeyListener(null);
 
                             final ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                             buffer.rewind();
