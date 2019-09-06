@@ -61,10 +61,12 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
                             byte[] data = new byte[buffer.remaining()];
                             buffer.get(data);
 
-                            Integer[] pixels = new Integer[data.length];
-                            for(int i = 0; i < data.length; i++) {
-                                Integer toInt = data[i] & 255;
-                                pixels[i] = toInt;
+                            Integer[] pixelGrid = new Integer[1080*1440];
+                            for(int c = 0; c < 1440; c++){
+                                for(int r = 0; r < 1080; r++){
+                                    Integer toInt = data[1440*(1079-r) + c] & 255;
+                                    pixelGrid[r + c*1080] = toInt;
+                                }
                             }
 
                             StringBuilder sb = new StringBuilder();
@@ -72,13 +74,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
                             for(int j=0; j<5041; j++){
 
-                                double pixelAverageLum = pixels[(71 - j%71)*1440*15 + (k*20)];
-                                /*for(int k=0; k<15; k++) {
-                                    for (int i = 0; i < 20; i++) {
-                                        pixelAverageLum += pixels[i + j * 20 + k*1440];
-                                    }
-                                }
-                                pixelAverageLum /= 300;*/
+                                double pixelAverageLum = pixelGrid[(j%71)*15 + k*20*1080];
 
                                 if(j%71 == 0 && j > 0){
                                     sb.append("\n");
