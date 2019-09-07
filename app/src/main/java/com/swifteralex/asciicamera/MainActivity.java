@@ -4,8 +4,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
+import android.view.Display;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.camera.core.*;
@@ -17,11 +20,19 @@ import java.nio.ByteBuffer;
 public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
     private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA};
+    private int screenWidth;
+    private int screenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        screenWidth = size.x;
+        screenHeight = size.y;
 
         // Request camera permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -34,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
     public void startCamera() {
         ImageAnalysisConfig config =
                 new ImageAnalysisConfig.Builder()
-                        .setTargetResolution(new Size(1065, 1988))
+                        .setTargetResolution(new Size(1440, 1080))
                         .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
                         .build();
 
@@ -48,7 +59,13 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
                         // Possible ASCII characters: !\u0022#$%\u0026'()*+,-/0123456789:;\u003c=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
                         // Each character is 15 pixels across and 28 pixels high
-                        // Width is 71 characters, height is 71 characters
+
+                        int imageWidth = image.getWidth();
+                        int imageHeight = image.getHeight();
+                        int charactersByLength = screenWidth/15 - 1;
+                        int charactersByHeight = screenHeight/28 - 1;
+
+                        Log.d("ASCII Camera", "" + screenHeight);
 
                         EditText editText = (EditText)findViewById(R.id.editText2);
                         editText.setKeyListener(null);
@@ -61,11 +78,11 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
                         StringBuilder sb = new StringBuilder();
                         int k = 0;
 
-                        for(int j=0; j<5041; j++){
+                        for(int j=0; j<charactersByLength*charactersByHeight; j++){
 
-                            int pixelAverageLum = data[(71 - j%71)*1440*13 + k*20] & 255;
+                            int pixelAverageLum = data[(charactersByLength - j%charactersByLength)*imageWidth*(imageHeight/charactersByLength - 4) + k*(imageWidth/charactersByLength)] & 255;
 
-                            if(j%71 == 0 && j > 0){
+                            if(j%charactersByLength == 0 && j > 0){
                                 sb.append("\n");
                                 k++;
                             }
@@ -130,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
                                 sb.append("$");
                             }else if(pixelAverageLum >= 16){
                                 sb.append("@");
-                            }else if(pixelAverageLum >= 0){
+                            }else{
                                 sb.append("M");
                             }
                         }
