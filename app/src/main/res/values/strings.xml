@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ASCII Camera</string>
+    <string name="desc">Change Camera</string>
 </resources>
