@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Size;
 import android.view.Display;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.camera.core.*;
@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
     private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA};
     private int screenWidth;
     private int screenHeight;
+    private CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
+    private boolean reverseCameraButtonPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
-        screenHeight = size.y;
+        screenHeight = size.y - 130; //Leave room for buttons at the bottom
 
         // Request camera permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -42,30 +44,42 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
         }
     }
 
+    public void reverseCameraButtonClicked(View view) {
+        reverseCameraButtonPressed = true;
+        if (lensFacing == CameraX.LensFacing.BACK){
+            lensFacing = CameraX.LensFacing.FRONT;
+        } else {
+            lensFacing = CameraX.LensFacing.BACK;
+        }
+        startCamera();
+    }
+
     public void startCamera() {
+        CameraX.unbindAll();
+
         ImageAnalysisConfig config =
                 new ImageAnalysisConfig.Builder()
                         .setTargetResolution(new Size(1440, 1080))
                         .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+                        .setLensFacing(lensFacing)
                         .build();
-
         ImageAnalysis imageAnalysis = new ImageAnalysis(config);
-
         imageAnalysis.setAnalyzer(
                 new ImageAnalysis.Analyzer() {
-
-                    @Override
                     public void analyze(ImageProxy image, int rotationDegrees) {
 
                         // Possible ASCII characters: !\u0022#$%\u0026'()*+,-/0123456789:;\u003c=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
                         // Each character is 15 pixels across and 28 pixels high
 
+                        if (reverseCameraButtonPressed) { //This prevents any new images from being analyzed after the reverse camera button has been pressed
+                            reverseCameraButtonPressed = false;
+                            return;
+                        }
+
                         int imageWidth = image.getWidth();
                         int imageHeight = image.getHeight();
                         int charactersByLength = screenWidth/15 - 1;
                         int charactersByHeight = screenHeight/28 - 1;
-
-                        Log.d("ASCII Camera", "" + screenHeight);
 
                         EditText editText = (EditText)findViewById(R.id.editText2);
                         editText.setKeyListener(null);
@@ -76,15 +90,22 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
                         buffer.get(data);
 
                         StringBuilder sb = new StringBuilder();
-                        int k = 0;
+                        int line = 0;
 
                         for(int j=0; j<charactersByLength*charactersByHeight; j++){
 
-                            int pixelAverageLum = data[(charactersByLength - j%charactersByLength)*imageWidth*(imageHeight/charactersByLength - 4) + k*(imageWidth/charactersByLength)] & 255;
+                            int pixelAverageLum;
+                            if(lensFacing == CameraX.LensFacing.BACK) {
+                                pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * (imageHeight / charactersByLength - 4)
+                                        + line * (imageWidth / charactersByLength)] & 255;
+                            }else{
+                                pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * (imageHeight / charactersByLength - 4)
+                                        + (charactersByHeight - line) * (imageWidth / charactersByLength)] & 255;
+                            }
 
                             if(j%charactersByLength == 0 && j > 0){
                                 sb.append("\n");
-                                k++;
+                                line++;
                             }
 
                             if(pixelAverageLum >= 230){
