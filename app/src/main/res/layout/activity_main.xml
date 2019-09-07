@@ -9,9 +9,8 @@
 
     <EditText
         android:id="@+id/editText2"
-        android:layout_width="415dp"
-        android:layout_height="839dp"
-        android:editable="true"
+        android:layout_width="500dp"
+        android:layout_height="1000dp"
         android:ems="10"
         android:fontFamily="serif-monospace"
         android:gravity="start|top"
@@ -23,5 +22,16 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:contentDescription="@string/desc"
+        android:onClick="reverseCameraButtonClicked"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/stat_notify_sync_noanim" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
