@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
                             int pixelAverageLum;
                             if(lensFacing == CameraX.LensFacing.BACK) {
                                 pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * (imageHeight / charactersByLength - 4)
-                                        + line * (imageWidth / charactersByLength)] & 255;
+                                        + line * (imageWidth / charactersByLength) + 2*charactersByLength*imageWidth] & 255;
                             }else{
                                 pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * (imageHeight / charactersByLength - 4)
-                                        + (charactersByHeight - line) * (imageWidth / charactersByLength)] & 255;
+                                        + (charactersByHeight - line) * (imageWidth / charactersByLength) + + 2*charactersByLength*imageWidth] & 255;
                             }
 
                             if(j%charactersByLength == 0 && j > 0){
