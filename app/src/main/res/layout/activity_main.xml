@@ -28,10 +28,11 @@
         android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
+        android:backgroundTint="#00FFFFFF"
         android:contentDescription="@string/desc"
         android:onClick="reverseCameraButtonClicked"
+        android:src="@drawable/reverse_camera"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/stat_notify_sync_noanim" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
