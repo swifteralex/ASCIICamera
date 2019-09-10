@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -26,13 +25,48 @@
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="70dp"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_marginStart="2dp"
         android:backgroundTint="#00FFFFFF"
-        android:contentDescription="@string/desc"
+        android:contentDescription="@string/desc_reverse"
         android:onClick="reverseCameraButtonClicked"
         android:src="@drawable/reverse_camera"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton4"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="15dp"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/desc_zoomin"
+        android:onClick="zoomInButtonClicked"
+        android:src="@drawable/zoom_in"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton6"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:backgroundTint="#00FFFFFF"
+        android:contentDescription="@string/desc_zoomout"
+        android:onClick="zoomOutButtonClicked"
+        android:src="@drawable/zoom_out"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="serif-monospace"
+        android:text="@string/zoom_text"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton4"
+        app:layout_constraintTop_toTopOf="@+id/imageButton4" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
