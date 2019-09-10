@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
     private int screenHeight;
     private CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
     private boolean reverseCameraButtonPressed = false;
+    private int zoom = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,20 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
             lensFacing = CameraX.LensFacing.BACK;
         }
         startCamera();
+    }
+
+    public void zoomInButtonClicked(View view) {
+        if(zoom == 20){
+            return;
+        }
+        zoom+=2;
+    }
+
+    public void zoomOutButtonClicked(View view) {
+        if(zoom == 0){
+            return;
+        }
+        zoom-=2;
     }
 
     public void startCamera() {
@@ -96,11 +111,11 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
                             int pixelAverageLum;
                             if(lensFacing == CameraX.LensFacing.BACK) {
-                                pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * (imageHeight / charactersByLength - 4)
-                                        + line * (imageWidth / charactersByLength) + 2*charactersByLength*imageWidth] & 255;
+                                pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * ((imageHeight - 30*zoom) / charactersByLength - 4)
+                                        + line * ((imageWidth - 56*zoom) / charactersByLength) + 2*charactersByLength*imageWidth + imageWidth*zoom*15 + zoom*28] & 255;
                             }else{
-                                pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * (imageHeight / charactersByLength - 4)
-                                        + (charactersByHeight - line) * (imageWidth / charactersByLength) + + 2*charactersByLength*imageWidth] & 255;
+                                pixelAverageLum = data[(charactersByLength - j % charactersByLength) * imageWidth * ((imageHeight - 30*zoom) / charactersByLength - 4)
+                                        + (charactersByHeight - line) * ((imageWidth - 56*zoom) / charactersByLength) + 2*charactersByLength*imageWidth + imageWidth*zoom*15 + zoom*28] & 255;
                             }
 
                             if(j%charactersByLength == 0 && j > 0){
