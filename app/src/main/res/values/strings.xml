@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ASCII Camera</string>
-    <string name="desc">Change Camera</string>
+    <string name="desc_reverse">Change Camera</string>
+    <string name="desc_zoomin">Zoom In</string>
+    <string name="desc_zoomout">Zoom Out</string>
+    <string name="zoom_text">ZOOM</string>
 </resources>
