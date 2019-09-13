@@ -3,5 +3,6 @@
     <string name="desc_reverse">Change Camera</string>
     <string name="desc_zoomin">Zoom In</string>
     <string name="desc_zoomout">Zoom Out</string>
+    <string name="desc_snappicture">Snap Picture</string>
     <string name="zoom_text">ZOOM</string>
 </resources>
