@@ -47,17 +47,6 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton6"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:backgroundTint="#00FFFFFF"
-        android:contentDescription="@string/desc_zoomout"
-        android:onClick="zoomOutButtonClicked"
-        android:src="@drawable/zoom_out"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView" />
-
-    <ImageButton
         android:id="@+id/imageButton2"
         android:layout_width="45dp"
         android:layout_height="45dp"
