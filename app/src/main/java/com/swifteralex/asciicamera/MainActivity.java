@@ -4,11 +4,15 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Size;
 import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.camera.core.*;
@@ -16,10 +20,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
-    private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA};
+    private String[] REQUIRED_PERMISSIONS = new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private int screenWidth;
     private int screenHeight;
     private CameraX.LensFacing lensFacing = CameraX.LensFacing.BACK;
@@ -38,7 +43,8 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
         screenHeight = size.y - 130; //Leave room for buttons at the bottom
 
         // Request camera permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             startCamera();
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 10);
@@ -67,6 +73,31 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
             return;
         }
         zoom-=2;
+    }
+
+    public void snapPictureButtonClicked(View view) {
+        Toast.makeText(this, "Picture saved!", Toast.LENGTH_SHORT).show();
+
+        View v1 = getWindow().getDecorView().getRootView();
+        v1.setDrawingCacheEnabled(true);
+        Bitmap toBeCropped = Bitmap.createBitmap(v1.getDrawingCache());
+        v1.setDrawingCacheEnabled(false); //This takes a screenshot of the phone, which will be cropped later
+
+        Rect rectangle = new Rect();
+        Window window = getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
+        int statusBarHeight = rectangle.top;
+        int contentViewTop =
+                window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+        int titleBarHeight= statusBarHeight - contentViewTop;
+
+        Bitmap bitmap = Bitmap.createBitmap(toBeCropped, 0, titleBarHeight, toBeCropped.getWidth(), toBeCropped.getHeight() - titleBarHeight); //Crop out the status bar
+        bitmap.reconfigure(screenWidth, screenHeight - titleBarHeight, Bitmap.Config.ARGB_8888); //Crop out the app's UI interactables
+
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now); //Name the image with the current time
+
+        MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap ,"" + now , "description"); //Save the image to the phone
     }
 
     public void startCamera() {
@@ -198,7 +229,8 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 10) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 startCamera();
             } else {
                 Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
